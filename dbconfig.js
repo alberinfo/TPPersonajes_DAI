@@ -1,4 +1,4 @@
-import 'dotenv/config';
+require('dotenv/config');
 
 const config = {
     user : process.env.SqlUser,
@@ -11,4 +11,4 @@ const config = {
     }
 }
 
-export default config;
+module.exports = config;

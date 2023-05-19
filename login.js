@@ -10,6 +10,5 @@ exports.createAuth = createAuth = () => {
 }
 
 exports.validateAuth = validateAuth = (auth) => {
-    console.log(listAuths.find(element => element == auth));
     return listAuths.find(element => element == auth);
 }
