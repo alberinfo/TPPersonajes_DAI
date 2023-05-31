@@ -31,7 +31,7 @@ class personajeService {
         let conn = await sql.connect(config);
         try {
             let result = await conn.request()
-                            .input("pIdMovie", idmovie)
+                            .input("pIdMovie", sql.Int, idmovie)
                             .execute("getPersonajeByIdMovie");
             return result.recordset;
         } catch (e) {

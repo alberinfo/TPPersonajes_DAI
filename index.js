@@ -3,6 +3,8 @@ const cors = require("cors"); //Middleware
 const {createAuth, validateAuth} = require("./login.js");
 const personajeService = require("./personajeService.js");
 
+let allPersonajes = [];
+
 const app = express();
 app.use(express.json());
 //app.use(cors());
@@ -20,7 +22,8 @@ app.use(authChecker);
 
 //Personajes
 app.get("/characters", async (req, res) => {
-    let result = await personajeService.getAllPersonajes();
+    if(allPersonajes.length === 0) allPersonajes = await personajeService.getAllPersonajes();
+    let result = allPersonajes;
 
     if(typeof req.query.name !== "undefined") { //if param exists
         result = result.filter(element => element.nombre == req.query.name);
@@ -31,9 +34,8 @@ app.get("/characters", async (req, res) => {
     }
 
     if(typeof req.query.movies !== "undefined") {
-        let personajesxpeli = await personajeService.getPersonajexPeli(req.query.movies);
-        console.log(result);
-        result = personajesxpeli.filter(element => result.includes(element) === true);
+        let personajesxpeli = await personajeService.getPersonajexPeli(parseInt(req.query.movies));
+        result = personajesxpeli.filter(element => result.some(x => x.id == element.id));
     }
 
     res.send(JSON.stringify(result));
@@ -45,16 +47,24 @@ app.get("/character/:nombre", async (req, res) => {
 })
 
 app.post("/character", async (req, res) => {
+    allPersonajes.push(JSON.parse(req.body.personaje));
+    
     let result = await personajeService.crearPersonaje(req.body.personaje);
     res.send(JSON.stringify(result));
 })
 
 app.put("/character", async (req, res) => {
+    let idx = allPersonajes.indexOf(allPersonajes.filter(element => element.id == req.body.personaje.id));
+    allPersonajes[idx] = JSON.parse(req.body.personaje);
+    
     let result = await personajeService.actualizarPersonaje(req.body.personaje);
     res.send(JSON.stringify(result));
 })
 
 app.delete("/character/:id", async (req, res) => {
+    let idx = allPersonajes.indexOf(allPersonajes.filter(element => element.id == req.body.personaje.id));
+    allPersonajes.splice(idx, 1);
+
     let result = await personajeService.eliminarPersonaje(req.params.id);
     res.send(JSON.stringify(result));
 })
