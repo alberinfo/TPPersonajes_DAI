@@ -42,7 +42,10 @@ app.get("/characters", async (req, res) => {
 })
 
 app.get("/character/:nombre", async (req, res) => {
-    let result = await personajeService.getPersonaje(req.params.nombre);
+    if(allPersonajes.length === 0) allPersonajes = await personajeService.getAllPersonajes();
+    
+    let result = allPersonajes.find(personaje => personaje.nombre == req.params.nombre);
+
     res.send(JSON.stringify(result));
 })
 
